@@ -52,6 +52,7 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
         self
     }
 
+#--- Array methods that *MAY* be implemented by the consumer -------------------
     method new(::?CLASS:U: **@values is raw) {
         self.CREATE.STORE(@values)
     }
@@ -109,6 +110,18 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
         }
     }
 
+    method gist() { '[' ~ self.Str ~ ']' }
+    method Str()  { self.values.map( *.Str ).join(" ") }
+    method perl() {
+        self.perlseen(self.^name, {
+          ~ self.^name
+          ~ '.new('
+          ~ self.map({$_<>.perl}).join(', ')
+          ~ ',' x (self.elems == 1 && self.AT-POS(0) ~~ Iterable)
+          ~ ')'
+        })
+    }
+
     method splice() { X::NYI.new( :feature<splice> ).throw }
     method grab()   { X::NYI.new( :feature<grab>   ).throw }
 
@@ -140,6 +153,11 @@ Array::Agnostic - add "is sparse" trait for Arrays
 
   use Array::Agnostic;
   class Array::MyWay does Array::Agnostic {
+      method AT-POS()     { ... }
+      method BIND-POS()   { ... }
+      method DELETE-POS() { ... }
+      method EXISTS-POS() { ... }
+      method elems()      { ... }
   }
 
   my @a is Array::MyWay = 1,2,3;

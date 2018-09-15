@@ -17,6 +17,10 @@ plan 5;
 
 my @a is MyArray = ^10;
 
+say @a;
+put @a;
+dd @a;
+
 dd @a[$_] for ^10;
 
 dd $_ for @a;
