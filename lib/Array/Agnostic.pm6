@@ -197,6 +197,8 @@ don't have to as an implementation is provided by this role.
 
 =head3 method end
 
+=head3 method gist
+
 =head3 method grab
 
 =head3 method head
@@ -215,6 +217,8 @@ don't have to as an implementation is provided by this role.
 
 =head3 method pairs
 
+=head3 method perl
+
 =head3 method pop
 
 =head3 method prepend
@@ -226,6 +230,8 @@ don't have to as an implementation is provided by this role.
 =head3 method shift
 
 =head3 method Slip
+
+=head3 method Str
 
 =head3 method splice
 
