@@ -9,7 +9,7 @@ SYNOPSIS
 ========
 
     use Array::Agnostic;
-    class Array::MyWay does Array::Agnostic {
+    class MyArray does Array::Agnostic {
         method AT-POS()     { ... }
         method BIND-POS()   { ... }
         method DELETE-POS() { ... }
@@ -17,12 +17,12 @@ SYNOPSIS
         method elems()      { ... }
     }
 
-    my @a is Array::MyWay = 1,2,3;
+    my @a is MyArray = 1,2,3;
 
 DESCRIPTION
 ===========
 
-This module makes an `Array::Agnostic` role available for those classes that wish to implement the `Positional` role. It provides all of the `Array` functionality while only needing to implement 5 methods:
+This module makes an `Array::Agnostic` role available for those classes that wish to implement the `Positional` role as an `Array`. It provides all of the `Array` functionality while only needing to implement 5 methods:
 
 Required Methods
 ----------------
@@ -42,15 +42,13 @@ Optional Methods (provided by role)
 
 You may implement these methods out of performance reasons yourself, but you don't have to as an implementation is provided by this role.
 
-### method ASSIGN-POS
-
-### method CLEAR
-
-### method STORE
+### method append
 
 ### method Array
 
-### method append
+### method ASSIGN-POS
+
+### method CLEAR
 
 ### method end
 
@@ -87,6 +85,8 @@ You may implement these methods out of performance reasons yourself, but you don
 ### method shift
 
 ### method Slip
+
+### method STORE
 
 ### method Str
 

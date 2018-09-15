@@ -152,7 +152,7 @@ Array::Agnostic - be an array without knowing how
 =head1 SYNOPSIS
 
   use Array::Agnostic;
-  class Array::MyWay does Array::Agnostic {
+  class MyArray does Array::Agnostic {
       method AT-POS()     { ... }
       method BIND-POS()   { ... }
       method DELETE-POS() { ... }
@@ -160,13 +160,13 @@ Array::Agnostic - be an array without knowing how
       method elems()      { ... }
   }
 
-  my @a is Array::MyWay = 1,2,3;
+  my @a is MyArray = 1,2,3;
 
 =head1 DESCRIPTION
 
 This module makes an C<Array::Agnostic> role available for those classes that
-wish to implement the C<Positional> role.  It provides all of the C<Array>
-functionality while only needing to implement 5 methods:
+wish to implement the C<Positional> role as an C<Array>.  It provides all of
+the C<Array> functionality while only needing to implement 5 methods:
 
 =head2 Required Methods
 
@@ -185,15 +185,13 @@ functionality while only needing to implement 5 methods:
 You may implement these methods out of performance reasons yourself, but you
 don't have to as an implementation is provided by this role.
 
-=head3 method ASSIGN-POS
-
-=head3 method CLEAR
-
-=head3 method STORE
+=head3 method append
 
 =head3 method Array
 
-=head3 method append
+=head3 method ASSIGN-POS
+
+=head3 method CLEAR
 
 =head3 method end
 
@@ -230,6 +228,8 @@ don't have to as an implementation is provided by this role.
 =head3 method shift
 
 =head3 method Slip
+
+=head3 method STORE
 
 =head3 method Str
 
