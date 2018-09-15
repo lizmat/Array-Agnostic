@@ -13,13 +13,15 @@ class MyArray does Array::Agnostic {
     method elems()                      { @!array.elems                }
 }
 
-plan 5;
+plan 3;
 
 my @a is MyArray = ^10;
 
-say @a;
-put @a;
-dd @a;
+is @a.gist,            "[0 1 2 3 4 5 6 7 8 9]", 'does .gist work ok';
+is @a.Str,              "0 1 2 3 4 5 6 7 8 9",  'does .Str work ok';
+is @a.perl, "MyArray.new(0,1,2,3,4,5,6,7,8,9)", 'does .perl work ok';
+
+=finish
 
 dd @a[$_] for ^10;
 

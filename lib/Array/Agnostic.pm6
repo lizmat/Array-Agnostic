@@ -116,7 +116,7 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
         self.perlseen(self.^name, {
           ~ self.^name
           ~ '.new('
-          ~ self.map({$_<>.perl}).join(', ')
+          ~ self.map({$_<>.perl}).join(',')
           ~ ',' x (self.elems == 1 && self.AT-POS(0) ~~ Iterable)
           ~ ')'
         })
@@ -147,7 +147,7 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
 
 =head1 NAME
 
-Array::Agnostic - add "is sparse" trait for Arrays
+Array::Agnostic - be an array without knowing how
 
 =head1 SYNOPSIS
 

@@ -5,7 +5,7 @@
   ],
   "build-depends" : [ ],
   "depends" : [ ],
-  "description" : "Be an array without knowing how",
+  "description" : "be an array without knowing how",
   "license" : "Artistic-2.0",
   "name" : "Array::Agnostic",
   "perl" : "6.c",
