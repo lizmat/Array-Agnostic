@@ -1,6 +1,9 @@
 use v6.c;
 
-role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
+role Array::Agnostic:ver<0.0.2>:auth<cpan:ELIZABETH>
+  does Positional   # .AT-POS and friends
+  does Iterable     # .iterator, basically
+{
 
 #--- These methods *MUST* be implemented by the consumer -----------------------
     method AT-POS($)     is raw { ... }
@@ -29,7 +32,7 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
         has int $on;
 
         method pull-one() is raw {
-            $on++ & 1  
+            $on++ %% 2
               ?? $!index < $!end            # on the key now
                 ?? ++$!index
                 !! IterationEnd
@@ -61,25 +64,22 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
     method end()    { $.elems - 1 }
     method keys()   { Seq.new( (^$.elems).iterator ) }
     method values() { Seq.new( self.iterator ) }
-    method pairs()  { (^$.elems).map: { $_ => self.AT-POS } }
+    method pairs()  { (^$.elems).map: { $_ => self.AT-POS($_) } }
     method shape()  { (*,) }
-
-    method head(|c) { Seq.new( self.iterator ).head(c) }
-    method tail(|c) { Seq.new( self.iterator ).tail(c) }
 
     method kv() { Seq.new( KV.new( :backend(self), :$.end ) ) }
 
-    method list()  { List.new(self.values) }
-    method Slip()  { Slip.from-iterator(self.iterator) }
-    method List()  { List.new(self.values) }
-    method Array() { Array.new(self.values) }
+    method list()  { List .from-iterator(self.iterator) }
+    method Slip()  { Slip .from-iterator(self.iterator) }
+    method List()  { List .from-iterator(self.iterator) }
+    method Array() { Array.from-iterator(self.iterator) }
 
-    method append(+@values is raw) {
+    method !append(@values) {
         self.ASSIGN-POS(self.elems,$_) for @values;
+        self
     }
-    method push(**@values is raw) {
-        self.ASSIGN-POS(self.elems,$_) for @values;
-    }
+    method append(+@values is raw) { self!append(@values) }
+    method push( **@values is raw) { self!append(@values) }
     method pop() {
         if self.elems -> \elems {
             self.DELETE-POS(elems - 1)
@@ -89,20 +89,17 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
         }
     }
 
-    method prepend(+@values is raw) {
-        self!move-indexes-up(+@values);
+    method !prepend(@values) {
+        self.move-indexes-up(+@values);
         self.ASSIGN-POS($_,@values.AT-POS($_)) for ^@values;
         self
     }
-    method unshift(**@values is raw) {
-        self!move-indexes-up(+@values);
-        self.ASSIGN-POS($_,@values.AT-POS($_)) for ^@values;
-        self
-    }
+    method prepend( +@values is raw) { self!prepend(@values) }
+    method unshift(**@values is raw) { self!prepend(@values) }
     method shift() {
         if self.elems -> \elems {
-            my \value = self.AT-POS(0);
-            self!move-indexes-down(1);
+            my \value = self.AT-POS(0)<>;
+            self.move-indexes-down(1);
             value
         }
         else {
@@ -128,18 +125,19 @@ role Array::Agnostic:ver<0.0.1>:auth<cpan:ELIZABETH> does Positional {
 # -- Internal subroutines and private methods ----------------------------------
     sub is-container(\it) { it.VAR.^name ne it.^name }
 
-    method !move-indexes-up($number, $range = ^$.elems) {
+    method move-indexes-up($number, $range = ^$.elems --> Nil) {
         is-container(my \value = self.AT-POS($_))
-          ?? self.BIND-POS(  $_ + $number, value)
-          !! self.ASSIGN-POS($_ + $number, value)
+          ?? self.ASSIGN-POS($_ + $number, value)
+          !! self.BIND-POS(  $_ + $number, value)
           for $range.reverse;
     }
 
-    method !move-indexes-down($number, $range = ^$.elems) {
+    method move-indexes-down($number, $range = ^$.elems --> Nil) {
         is-container(my \value = self.AT-POS($_ + $number))
-          ?? self.BIND-POS(  $_, value)
-          !! self.ASSIGN-POS($_, value)
+          ?? self.ASSIGN-POS($_, value)
+          !! self.BIND-POS(  $_, value)
           for $range.list;
+        self.DELETE-POS($_) for (($.end - $number) ^.. $.end).reverse;
     }
 }
 
@@ -199,8 +197,6 @@ don't have to as an implementation is provided by this role.
 
 =head3 method grab
 
-=head3 method head
-
 =head3 method iterator
 
 =head3 method keys
@@ -235,11 +231,17 @@ don't have to as an implementation is provided by this role.
 
 =head3 method splice
 
-=head3 method tail
-
 =head3 method unshift
 
 =head3 method values
+
+=head2 Optional Internal Methods (provided by role)
+
+These methods may be implemented by the consumer for performance reasons.
+
+=head3 method move-indexes-up
+
+=head3 method move-indexes-down
 
 =head1 AUTHOR
 
