@@ -2,5 +2,15 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.2  2018-09-16T14:23:50+02:00
+    - Now also does Iterable
+    - Fixed .pairs / .list / .List / .Array / .Slip
+    - Removed .head / .tail
+    - Abstracted .push / .append logic into !append
+    - Abstracted .unshift / .prepend logic into !prepend
+    - Fix containerish thinko in move-indexes-up/down
+    - Make sure move-indexs-down removes elements at end
+    - Make move-indexes-up/down something a consumer can do for performance
+
 0.0.1  2018-09-16T00:08:25+02:00
     - Initial version

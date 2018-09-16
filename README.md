@@ -56,8 +56,6 @@ You may implement these methods out of performance reasons yourself, but you don
 
 ### method grab
 
-### method head
-
 ### method iterator
 
 ### method keys
@@ -92,11 +90,18 @@ You may implement these methods out of performance reasons yourself, but you don
 
 ### method splice
 
-### method tail
-
 ### method unshift
 
 ### method values
+
+Optional Internal Methods (provided by role)
+--------------------------------------------
+
+These methods may be implemented by the consumer for performance reasons.
+
+### method move-indexes-up
+
+### method move-indexes-down
 
 AUTHOR
 ======
