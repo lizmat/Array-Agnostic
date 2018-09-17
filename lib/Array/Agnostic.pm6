@@ -1,6 +1,8 @@
 use v6.c;
 
-role Array::Agnostic:ver<0.0.3>:auth<cpan:ELIZABETH>
+sub is-container(\it) is export { it.VAR.^name ne it.^name }
+
+role Array::Agnostic:ver<0.0.4>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -123,7 +125,6 @@ role Array::Agnostic:ver<0.0.3>:auth<cpan:ELIZABETH>
     method grab()   { X::NYI.new( :feature<grab>   ).throw }
 
 # -- Internal subroutines and methods that *MAY* be implemented ----------------
-    sub is-container(\it) { it.VAR.^name ne it.^name }
 
     # Move indexes up for the number of positions given, optionally from the
     # given given position (defaults to start). Removes the original positions.

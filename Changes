@@ -2,6 +2,9 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.4  2018-09-17T13:39:56+02:00
+    - Export "is-container" sub
+
 0.0.3  2018-09-17T11:43:43+02:00
     - Reimplement move-indexes-up/down
       - properly handle holes
