@@ -2,6 +2,12 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.3  2018-09-17T11:43:43+02:00
+    - Reimplement move-indexes-up/down
+      - properly handle holes
+      - properly handle containers at previously bound locations
+      - remove positions that are no longer supposed to be there
+
 0.0.2  2018-09-16T14:23:50+02:00
     - Now also does Iterable
     - Fixed .pairs / .list / .List / .Array / .Slip

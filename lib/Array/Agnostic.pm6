@@ -1,6 +1,6 @@
 use v6.c;
 
-role Array::Agnostic:ver<0.0.2>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.3>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -122,22 +122,41 @@ role Array::Agnostic:ver<0.0.2>:auth<cpan:ELIZABETH>
     method splice() { X::NYI.new( :feature<splice> ).throw }
     method grab()   { X::NYI.new( :feature<grab>   ).throw }
 
-# -- Internal subroutines and private methods ----------------------------------
+# -- Internal subroutines and methods that *MAY* be implemented ----------------
     sub is-container(\it) { it.VAR.^name ne it.^name }
 
-    method move-indexes-up($number, $range = ^$.elems --> Nil) {
-        is-container(my \value = self.AT-POS($_))
-          ?? self.ASSIGN-POS($_ + $number, value)
-          !! self.BIND-POS(  $_ + $number, value)
-          for $range.reverse;
+    # Move indexes up for the number of positions given, optionally from the
+    # given given position (defaults to start). Removes the original positions.
+    method move-indexes-up($up, $start = 0 --> Nil) {
+        for ($start ..^ $.elems).reverse {
+            if self.EXISTS-POS($_) {
+                is-container(my \value = self.DELETE-POS($_))
+                  ?? self.ASSIGN-POS($_ + $up, value)
+                  !! self.BIND-POS(  $_ + $up, value);
+            }
+        }
     }
 
-    method move-indexes-down($number, $range = ^$.elems --> Nil) {
-        is-container(my \value = self.AT-POS($_ + $number))
-          ?? self.ASSIGN-POS($_, value)
-          !! self.BIND-POS(  $_, value)
-          for $range.list;
-        self.DELETE-POS($_) for (($.end - $number) ^.. $.end).reverse;
+    # Move indexes down for the number of positions given, optionally from the
+    # given position (which defaults to the number of positions to move down).
+    # Removes original positions.
+    method move-indexes-down($down, $start = $down --> Nil) {
+        for ($start ..^ $.elems).list -> $from {
+            my $to = $from - $down;
+            if self.EXISTS-POS($from) {
+                my \value = self.DELETE-POS($from);  # something to move
+                if is-container(value) {
+                    self.DELETE-POS($to);            # could have been bound
+                    self.ASSIGN-POS($to, value);
+                }
+                else {
+                    self.BIND-POS($to, value);       # don't care what it was
+                }
+            }
+            else {
+                self.DELETE-POS($to);                # nothing to move
+            }
+        }
     }
 }
 
