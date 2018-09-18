@@ -2,7 +2,7 @@ use v6.c;
 
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
-role Array::Agnostic:ver<0.0.4>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.5>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -190,78 +190,96 @@ the C<Array> functionality while only needing to implement 5 methods:
 
 =head3 method AT-POS
 
+  method AT-POS($position) { ... }  # simple case
+
+  method AT-POS($position) { Proxy.new( FETCH => { ... }, STORE => { ... } }
+
+Return the value at the given position in the array.  Must return a C<Proxy>
+that will assign to that position if you wish to allow for auto-vivification
+of elements in your array.
+
 =head3 method BIND-POS
+
+  method BIND-POS($position, $value) { ... }
+
+Bind the given value to the given position in the array, and return the value.
 
 =head3 method DELETE-POS
 
+  method DELETE-POS($position) { ... }
+
+Mark the element at the given position in the array as absent (make
+C<EXISTS-POS> return C<False> for this position).
+
 =head3 method EXISTS-POS
 
+  method EXISTS-POS($position) { ... }
+
+Return C<Bool> indicating whether the element at the given position exists
+(aka, is B<not> marked as absent).
+
 =head3 method elems
+
+  method elems(--> Int:D) { ... }
+
+Return the number of elements in the array (defined as the index of the
+highest element + 1).
 
 =head2 Optional Methods (provided by role)
 
 You may implement these methods out of performance reasons yourself, but you
-don't have to as an implementation is provided by this role.
+don't have to as an implementation is provided by this role.  They follow the
+same semantics as the methods on the
+L<Array object|https://docs.perl6.org/type/Array>.
 
-=head3 method append
-
-=head3 method Array
-
-=head3 method ASSIGN-POS
-
-=head3 method CLEAR
-
-=head3 method end
-
-=head3 method gist
-
-=head3 method grab
-
-=head3 method iterator
-
-=head3 method keys
-
-=head3 method kv
-
-=head3 method list
-
-=head3 method List
-
-=head3 method new
-
-=head3 method pairs
-
-=head3 method perl
-
-=head3 method pop
-
-=head3 method prepend
-
-=head3 method push
-
-=head3 method shape
-
-=head3 method shift
-
-=head3 method Slip
-
-=head3 method STORE
-
-=head3 method Str
-
-=head3 method splice
-
-=head3 method unshift
-
-=head3 method values
+In alphabetical order:
+C<append>, C<Array>, C<ASSIGN-POS>, C<end>, C<gist>, C<grab>, C<iterator>, 
+C<keys>, C<kv>, C<list>, C<List>, C<new>, C<pairs>, C<perl>, C<pop>, 
+C<prepend>, C<push>, C<shape>, C<shift>, C<Slip>, C<STORE>, C<Str>, C<splice>, 
+C<unshift>, C<values>
 
 =head2 Optional Internal Methods (provided by role)
 
 These methods may be implemented by the consumer for performance reasons.
 
+=head3 method CLEAR
+
+  method CLEAR(--> Nil) { ... }
+
+Reset the array to have no elements at all.  By default implemented by
+repeatedly calling C<DELETE-POS>, which will by all means, be very slow.
+So it is a good idea to implement this method yourself.
+
 =head3 method move-indexes-up
 
+  method move-indexes-up($up, $start = 0) { ... }
+
+Add the given value to the B<indexes> of the elements in the array, optionally
+starting from a given start index value (by default 0, so all elements of the
+array will be affected).  This functionality is needed if you want to be able
+to use C<shift>, C<unshift> and related functions.
+
 =head3 method move-indexes-down
+
+  method move-indexes-down($down, $start = $down) { ... }
+
+Subtract the given value to the B<indexes> of the elements in the array,
+optionally starting from a given start index value (by default the same as
+the number to subtract, so that all elements of the array will be affected.
+This functionality is needed if you want to be able to use C<shift>,
+C<unshift> and related functions.
+
+=head2 Exported subroutines
+
+=head3 sub is-container
+
+  my $a = 42;
+  say is-container($a);  # True
+  say is-container(42);  # False
+
+Returns whether the given argument is a container or not.  This can be handy
+for situations where you want to also support binding, B<and> allow for
+methods such as C<shift>, C<unshift> and related functions.
 
 =head1 AUTHOR
 

@@ -2,6 +2,10 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.5  2018-09-18T13:14:54+02:00
+    - Fill in the documentation framework
+    - Add documentation for "is-container" helper sub
+
 0.0.4  2018-09-17T13:39:56+02:00
     - Export "is-container" sub
 
