@@ -2,7 +2,7 @@ use v6.c;
 
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
-role Array::Agnostic:ver<0.0.5>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.6>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -47,7 +47,7 @@ role Array::Agnostic:ver<0.0.5>:auth<cpan:ELIZABETH>
         self.DELETE-POS($_) for (^$.elems).reverse;
     }
 
-    method ASSIGN-POS(int $pos, \value) is raw {
+    method ASSIGN-POS($pos, \value) is raw {
         self.AT-POS($pos) = value;
     }
 

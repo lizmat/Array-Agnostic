@@ -2,6 +2,9 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.6  2018-09-19T11:08:22+02:00
+    - Fixed default ASSIGN-POS implementation
+
 0.0.5  2018-09-18T13:14:54+02:00
     - Fill in the documentation framework
     - Add documentation for "is-container" helper sub
