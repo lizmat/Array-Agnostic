@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/lizmat/Array-Agnostic.svg?branch=master)](https://travis-ci.org/lizmat/Array-Agnostic)
-
 NAME
 ====
 
@@ -11,9 +9,6 @@ SYNOPSIS
     use Array::Agnostic;
     class MyArray does Array::Agnostic {
         method AT-POS()     { ... }
-        method BIND-POS()   { ... }
-        method DELETE-POS() { ... }
-        method EXISTS-POS() { ... }
         method elems()      { ... }
     }
 
@@ -35,24 +30,6 @@ Required Methods
 
 Return the value at the given position in the array. Must return a `Proxy` that will assign to that position if you wish to allow for auto-vivification of elements in your array.
 
-### method BIND-POS
-
-    method BIND-POS($position, $value) { ... }
-
-Bind the given value to the given position in the array, and return the value.
-
-### method DELETE-POS
-
-    method DELETE-POS($position) { ... }
-
-Mark the element at the given position in the array as absent (make `EXISTS-POS` return `False` for this position).
-
-### method EXISTS-POS
-
-    method EXISTS-POS($position) { ... }
-
-Return `Bool` indicating whether the element at the given position exists (aka, is **not** marked as absent).
-
 ### method elems
 
     method elems(--> Int:D) { ... }
@@ -69,7 +46,25 @@ In alphabetical order: `append`, `Array`, `ASSIGN-POS`, `end`, `gist`, `grab`, `
 Optional Internal Methods (provided by role)
 --------------------------------------------
 
-These methods may be implemented by the consumer for performance reasons.
+These methods may be implemented by the consumer for performance reasons or to provide a given capability.
+
+### method BIND-POS
+
+    method BIND-POS($position, $value) { ... }
+
+Bind the given value to the given position in the array, and return the value. Will throw an exception if called and not implemented.
+
+### method DELETE-POS
+
+    method DELETE-POS($position) { ... }
+
+Mark the element at the given position in the array as absent (make `EXISTS-POS` return `False` for this position). Will throw an exception if called and not implemented.
+
+### method EXISTS-POS
+
+    method EXISTS-POS($position) { ... }
+
+Return `Bool` indicating whether the element at the given position exists (aka, is **not** marked as absent). If not implemented, Will call `AT-POS` and return `True` if the returned value is defined.
 
 ### method CLEAR
 
@@ -110,7 +105,7 @@ Source can be located at: https://github.com/lizmat/Array-Agnostic . Comments an
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2018 Elizabeth Mattijsen
+Copyright 2018, 2020 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

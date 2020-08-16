@@ -1,17 +1,29 @@
 use v6.c;
 
+class X::NoImplementation is Exception {
+    has $.object;
+    has $.method;
+    method message() {
+        my $text = "No implementation of $.method method found for $.object.^name().";
+        $*DEFAULT-CLEAN
+          ?? "$text\nThis is needed to be able to clear an agnostic hash."
+          !! $*DEFAULT-UP
+            ?? "$text\nThis is needed to be able to insert elements in an agnostic array"
+            !! $*DEFAULT-DOWN
+              ?? "$text\nThis is needed to be able to remove elements from an agnostic array"
+              !! $text
+    }
+}
+
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
-role Array::Agnostic:ver<0.0.6>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.7>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
 
 #--- These methods *MUST* be implemented by the consumer -----------------------
     method AT-POS($)     is raw { ... }
-    method BIND-POS($,$) is raw { ... }
-    method EXISTS-POS($)        { ... }
-    method DELETE-POS($)        { ... }
     method elems()              { ... }
 
 #--- Internal Iterator classes that need to be specified here ------------------
@@ -43,7 +55,18 @@ role Array::Agnostic:ver<0.0.6>:auth<cpan:ELIZABETH>
     }
 
 #--- Positional methods that *MAY* be implemented by the consumer --------------
+    method BIND-POS($,$) is hidden-from-backtrace {
+        X::NoImplementation.new(object => self, method => 'BIND-POS').throw
+    }
+
+    method EXISTS-POS($pos) { self.AT-POS($pos).defined }
+
+    method DELETE-POS($) is hidden-from-backtrace {
+        X::NoImplementation.new(object => self, method => 'DELETE-POS').throw
+    }
+
     method CLEAR() {
+        my $*DEFAULT-CLEAN := True;
         self.DELETE-POS($_) for (^$.elems).reverse;
     }
 
@@ -51,7 +74,7 @@ role Array::Agnostic:ver<0.0.6>:auth<cpan:ELIZABETH>
         self.AT-POS($pos) = value;
     }
 
-    method STORE(*@values, :$initialize) {
+    method STORE(*@values) {
         self.CLEAR;
         self.ASSIGN-POS($_,@values.AT-POS($_)) for ^@values;
         self
@@ -129,6 +152,7 @@ role Array::Agnostic:ver<0.0.6>:auth<cpan:ELIZABETH>
     # Move indexes up for the number of positions given, optionally from the
     # given given position (defaults to start). Removes the original positions.
     method move-indexes-up($up, $start = 0 --> Nil) {
+        my $DEFAULT-UP := True;
         for ($start ..^ $.elems).reverse {
             if self.EXISTS-POS($_) {
                 is-container(my \value = self.DELETE-POS($_))
@@ -142,6 +166,7 @@ role Array::Agnostic:ver<0.0.6>:auth<cpan:ELIZABETH>
     # given position (which defaults to the number of positions to move down).
     # Removes original positions.
     method move-indexes-down($down, $start = $down --> Nil) {
+        my $DEFAULT-DOWN := True;
         for ($start ..^ $.elems).list -> $from {
             my $to = $from - $down;
             if self.EXISTS-POS($from) {
@@ -172,9 +197,6 @@ Array::Agnostic - be an array without knowing how
   use Array::Agnostic;
   class MyArray does Array::Agnostic {
       method AT-POS()     { ... }
-      method BIND-POS()   { ... }
-      method DELETE-POS() { ... }
-      method EXISTS-POS() { ... }
       method elems()      { ... }
   }
 
@@ -198,26 +220,6 @@ Return the value at the given position in the array.  Must return a C<Proxy>
 that will assign to that position if you wish to allow for auto-vivification
 of elements in your array.
 
-=head3 method BIND-POS
-
-  method BIND-POS($position, $value) { ... }
-
-Bind the given value to the given position in the array, and return the value.
-
-=head3 method DELETE-POS
-
-  method DELETE-POS($position) { ... }
-
-Mark the element at the given position in the array as absent (make
-C<EXISTS-POS> return C<False> for this position).
-
-=head3 method EXISTS-POS
-
-  method EXISTS-POS($position) { ... }
-
-Return C<Bool> indicating whether the element at the given position exists
-(aka, is B<not> marked as absent).
-
 =head3 method elems
 
   method elems(--> Int:D) { ... }
@@ -240,7 +242,31 @@ C<unshift>, C<values>
 
 =head2 Optional Internal Methods (provided by role)
 
-These methods may be implemented by the consumer for performance reasons.
+These methods may be implemented by the consumer for performance reasons
+or to provide a given capability.
+
+=head3 method BIND-POS
+
+  method BIND-POS($position, $value) { ... }
+
+Bind the given value to the given position in the array, and return the value.
+Will throw an exception if called and not implemented.
+
+=head3 method DELETE-POS
+
+  method DELETE-POS($position) { ... }
+
+Mark the element at the given position in the array as absent (make
+C<EXISTS-POS> return C<False> for this position).  Will throw an exception if
+called and not implemented.
+
+=head3 method EXISTS-POS
+
+  method EXISTS-POS($position) { ... }
+
+Return C<Bool> indicating whether the element at the given position exists
+(aka, is B<not> marked as absent).  If not implemented, Will call C<AT-POS>
+and return C<True> if the returned value is defined.
 
 =head3 method CLEAR
 
@@ -290,10 +316,10 @@ Comments and Pull Requests are welcome.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018 Elizabeth Mattijsen
+Copyright 2018, 2020 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 
 =end pod
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4
