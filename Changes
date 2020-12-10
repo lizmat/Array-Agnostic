@@ -2,6 +2,11 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.8  2020-12-10T12:46:54+01:00
+    - Raise language version to highest possible level
+    - Fix issues raised by 0racle++
+    - Mention only 2 methods need implementing, 0racle++
+
 0.0.7  2020-08-16T20:58:31+02:00
     - Remove incorrect reference to :$initialize, it is not needed anyway
     - Provide default implementation for BIND-POS, EXISTS-POS, DELETE-POS

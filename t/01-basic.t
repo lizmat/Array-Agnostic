@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 
 use Array::Agnostic;
@@ -11,9 +11,10 @@ class MyArray does Array::Agnostic {
     method EXISTS-POS($pos)             { @!array.EXISTS-POS($pos)     }
     method DELETE-POS($pos)             { @!array.DELETE-POS($pos)     }
     method elems()                      { @!array.elems                }
+    method gist()                       { @!array.gist                 }
 }
 
-plan 20;
+plan 21;
 
 my @a is MyArray = 1 .. 10;
 is @a.elems, 10, 'did we get 10 elements';
@@ -235,5 +236,13 @@ subtest {
     is @b.elems, 5, 'did we get right number of elements after unshift';
     is @b.end,   4, 'did we get right last element after unshift';
 }, 'test holes in arrays';
+
+# #1
+{
+    my @a is MyArray = ('one and a', 'two and a').map(*.words.map(*.comb));
+
+    is-deeply @a, MyArray.new((("o", "n", "e").Seq, ("a", "n", "d").Seq, ("a",).Seq).Seq,(("t", "w", "o").Seq, ("a", "n", "d").Seq, ("a",).Seq).Seq),
+      "did we map and comb correctly";
+}
 
 # vim: expandtab shiftwidth=4

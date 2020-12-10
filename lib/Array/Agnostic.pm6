@@ -1,4 +1,4 @@
-use v6.c;
+use v6.d;
 
 class X::NoImplementation is Exception {
     has $.object;
@@ -17,7 +17,7 @@ class X::NoImplementation is Exception {
 
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
-role Array::Agnostic:ver<0.0.7>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -74,9 +74,14 @@ role Array::Agnostic:ver<0.0.7>:auth<cpan:ELIZABETH>
         self.AT-POS($pos) = value;
     }
 
-    method STORE(*@values) {
+    proto method STORE(|) {*}
+    multi method STORE(Iterable:D \iterable) {
         self.CLEAR;
-        self.ASSIGN-POS($_,@values.AT-POS($_)) for ^@values;
+        self!append(iterable)
+    }
+    multi method STORE(Mu \item) {
+        self.CLEAR;
+        self.ASSIGN-POS(0,item);
         self
     }
 
@@ -99,8 +104,17 @@ role Array::Agnostic:ver<0.0.7>:auth<cpan:ELIZABETH>
     method List()  { List .from-iterator(self.iterator) }
     method Array() { Array.from-iterator(self.iterator) }
 
-    method !append(@values) {
-        self.ASSIGN-POS(self.elems,$_) for @values;
+    method !append(Iterable:D \iterable) {
+        my int $i = self.end;
+        if is-container(iterable) {
+            self.ASSIGN-POS(++$i,iterable);
+        }
+        else {
+            my \iterator := iterable.iterator;
+            until (my \pulled := iterator.pull-one) =:= IterationEnd {
+                self.ASSIGN-POS(++$i, pulled);
+            }
+        }
         self
     }
     method append(+@values is raw) { self!append(@values) }
@@ -206,7 +220,7 @@ Array::Agnostic - be an array without knowing how
 
 This module makes an C<Array::Agnostic> role available for those classes that
 wish to implement the C<Positional> role as an C<Array>.  It provides all of
-the C<Array> functionality while only needing to implement 5 methods:
+the C<Array> functionality while only needing to implement 2 methods:
 
 =head2 Required Methods
 

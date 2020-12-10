@@ -17,7 +17,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-This module makes an `Array::Agnostic` role available for those classes that wish to implement the `Positional` role as an `Array`. It provides all of the `Array` functionality while only needing to implement 5 methods:
+This module makes an `Array::Agnostic` role available for those classes that wish to implement the `Positional` role as an `Array`. It provides all of the `Array` functionality while only needing to implement 2 methods:
 
 Required Methods
 ----------------
