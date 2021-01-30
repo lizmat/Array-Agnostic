@@ -17,7 +17,7 @@ class X::NoImplementation is Exception {
 
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
-role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.9>:auth<cpan:ELIZABETH>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -55,31 +55,31 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
     }
 
 #--- Positional methods that *MAY* be implemented by the consumer --------------
-    method BIND-POS($,$) is hidden-from-backtrace {
+    method BIND-POS(::?ROLE:D: $,$) is hidden-from-backtrace {
         X::NoImplementation.new(object => self, method => 'BIND-POS').throw
     }
 
-    method EXISTS-POS($pos) { self.AT-POS($pos).defined }
+    method EXISTS-POS(::?ROLE:D: $pos) { self.AT-POS($pos).defined }
 
-    method DELETE-POS($) is hidden-from-backtrace {
+    method DELETE-POS(::?ROLE:D: $) is hidden-from-backtrace {
         X::NoImplementation.new(object => self, method => 'DELETE-POS').throw
     }
 
-    method CLEAR() {
+    method CLEAR(::?ROLE:D:) {
         my $*DEFAULT-CLEAN := True;
         self.DELETE-POS($_) for (^$.elems).reverse;
     }
 
-    method ASSIGN-POS($pos, \value) is raw {
+    method ASSIGN-POS(::?ROLE:D: $pos, \value) is raw {
         self.AT-POS($pos) = value;
     }
 
     proto method STORE(|) {*}
-    multi method STORE(Iterable:D \iterable) {
+    multi method STORE(::?ROLE:D: Iterable:D \iterable) {
         self.CLEAR;
         self!append(iterable)
     }
-    multi method STORE(Mu \item) {
+    multi method STORE(::?ROLE:D: Mu \item) {
         self.CLEAR;
         self.ASSIGN-POS(0,item);
         self
@@ -89,20 +89,20 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
     method new(::?CLASS:U: **@values is raw) {
         self.CREATE.STORE(@values)
     }
-    method iterator() { Iterate.new( :backend(self), :$.end ) }
+    method iterator(::?ROLE:D:) { Iterate.new( :backend(self), :$.end ) }
 
-    method end()    { $.elems - 1 }
-    method keys()   { Seq.new( (^$.elems).iterator ) }
-    method values() { Seq.new( self.iterator ) }
-    method pairs()  { (^$.elems).map: { $_ => self.AT-POS($_) } }
-    method shape()  { (*,) }
+    method end(::?ROLE:D:)    { $.elems - 1 }
+    method keys(::?ROLE:D:)   { Seq.new( (^$.elems).iterator ) }
+    method values(::?ROLE:D:) { Seq.new( self.iterator ) }
+    method pairs(::?ROLE:D:)  { (^$.elems).map: { $_ => self.AT-POS($_) } }
+    method shape(::?ROLE:D:)  { (*,) }
 
-    method kv() { Seq.new( KV.new( :backend(self), :$.end ) ) }
+    method kv(::?ROLE:D:) { Seq.new( KV.new( :backend(self), :$.end ) ) }
 
-    method list()  { List .from-iterator(self.iterator) }
-    method Slip()  { Slip .from-iterator(self.iterator) }
-    method List()  { List .from-iterator(self.iterator) }
-    method Array() { Array.from-iterator(self.iterator) }
+    method list(::?ROLE:D:)  { List .from-iterator(self.iterator) }
+    method Slip(::?ROLE:D:)  { Slip .from-iterator(self.iterator) }
+    method List(::?ROLE:D:)  { List .from-iterator(self.iterator) }
+    method Array(::?ROLE:D:) { Array.from-iterator(self.iterator) }
 
     method !append(Iterable:D \iterable) {
         my int $i = self.end;
@@ -117,9 +117,9 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
         }
         self
     }
-    method append(+@values is raw) { self!append(@values) }
-    method push( **@values is raw) { self!append(@values) }
-    method pop() {
+    method append(::?ROLE:D: +@values is raw) { self!append(@values) }
+    method push(::?ROLE:D:  **@values is raw) { self!append(@values) }
+    method pop(::?ROLE:D:) {
         if self.elems -> \elems {
             self.DELETE-POS(elems - 1)
         }
@@ -133,9 +133,9 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
         self.ASSIGN-POS($_,@values.AT-POS($_)) for ^@values;
         self
     }
-    method prepend( +@values is raw) { self!prepend(@values) }
-    method unshift(**@values is raw) { self!prepend(@values) }
-    method shift() {
+    method prepend(::?ROLE:D:  +@values is raw) { self!prepend(@values) }
+    method unshift(::?ROLE:D: **@values is raw) { self!prepend(@values) }
+    method shift(::?ROLE:D:) {
         if self.elems -> \elems {
             my \value = self.AT-POS(0)<>;
             self.move-indexes-down(1);
@@ -146,9 +146,10 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
         }
     }
 
-    method gist() { '[' ~ self.Str ~ ']' }
-    method Str()  { self.values.map( *.Str ).join(" ") }
-    method perl() {
+    method gist(::?ROLE:D:) { '[' ~ self.Str ~ ']' }
+    method Str(::?ROLE:D:)  { self.values.map( *.Str ).join(" ") }
+    method perl(::?ROLE:D:) is DEPRECATED("raku") { self.raku }
+    method raku(::?ROLE:D:) {
         self.perlseen(self.^name, {
           ~ self.^name
           ~ '.new('
@@ -158,14 +159,14 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
         })
     }
 
-    method splice() { X::NYI.new( :feature<splice> ).throw }
-    method grab()   { X::NYI.new( :feature<grab>   ).throw }
+    method splice(::?ROLE:D:) { X::NYI.new( :feature<splice> ).throw }
+    method grab(::?ROLE:D:)   { X::NYI.new( :feature<grab>   ).throw }
 
 # -- Internal subroutines and methods that *MAY* be implemented ----------------
 
     # Move indexes up for the number of positions given, optionally from the
     # given given position (defaults to start). Removes the original positions.
-    method move-indexes-up($up, $start = 0 --> Nil) {
+    method move-indexes-up(::?ROLE:D: $up, $start = 0 --> Nil) {
         my $DEFAULT-UP := True;
         for ($start ..^ $.elems).reverse {
             if self.EXISTS-POS($_) {
@@ -179,7 +180,7 @@ role Array::Agnostic:ver<0.0.8>:auth<cpan:ELIZABETH>
     # Move indexes down for the number of positions given, optionally from the
     # given position (which defaults to the number of positions to move down).
     # Removes original positions.
-    method move-indexes-down($down, $start = $down --> Nil) {
+    method move-indexes-down(::?ROLE:D: $down, $start = $down --> Nil) {
         my $DEFAULT-DOWN := True;
         for ($start ..^ $.elems).list -> $from {
             my $to = $from - $down;
@@ -330,7 +331,7 @@ Comments and Pull Requests are welcome.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018, 2020 Elizabeth Mattijsen
+Copyright 2018,2020,2021 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

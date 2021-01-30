@@ -10,7 +10,7 @@
   "description": "be an array without knowing how",
   "license": "Artistic-2.0",
   "name": "Array::Agnostic",
-  "perl": "6.c",
+  "perl": "6.d",
   "provides": {
     "Array::Agnostic": "lib/Array/Agnostic.pm6"
   },
@@ -22,5 +22,5 @@
   ],
   "test-depends": [
   ],
-  "version": "0.0.8"
+  "version": "0.0.9"
 }
