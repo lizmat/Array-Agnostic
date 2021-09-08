@@ -17,7 +17,7 @@ class X::NoImplementation is Exception {
 
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
-role Array::Agnostic:ver<0.0.9>:auth<cpan:ELIZABETH>
+role Array::Agnostic:ver<0.0.10>:auth<zef:lizmat>
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
@@ -324,14 +324,14 @@ methods such as C<shift>, C<unshift> and related functions.
 
 =head1 AUTHOR
 
-Elizabeth Mattijsen <liz@wenzperl.nl>
+Elizabeth Mattijsen <liz@raku.rocks>
 
 Source can be located at: https://github.com/lizmat/Array-Agnostic .
 Comments and Pull Requests are welcome.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018,2020,2021 Elizabeth Mattijsen
+Copyright 2018, 2020, 2021 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

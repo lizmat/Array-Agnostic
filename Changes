@@ -2,6 +2,12 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.10  2021-09-08T20:47:40+02:00
+    - Fix deprecation warning in tests, raydiak++
+    - Change file extension to .rakumod
+    - Migrate to zef ecosystem
+    - Update email address
+
 0.0.9  2021-01-30T12:42:15+01:00
     - Add method "raku", deprecate "perl" method
     - Make sure default implementations only take instances
