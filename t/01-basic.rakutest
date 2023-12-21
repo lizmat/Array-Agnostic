@@ -194,7 +194,7 @@ subtest {
 }, 'test .unshift / .prepend / .shift one flattenable element';
 
 subtest {
-    plan 12;
+    plan 15;
     is-deeply @a.unshift(42,666), @a, 'did .unshift return self';
     is @a.elems, 11, 'did we increase number of elements';
     is @a.end,   10, 'did we increase the last index';
@@ -210,6 +210,10 @@ subtest {
     @a.shift for ^4;
     is @a.elems,  9, 'did we decrease number of elements';
     is @a.end,    8, 'did we decrease the last index';
+
+    is-deeply +@a, 9,    'does it numerify ok';
+    is-deeply ?@a, True, 'does it boolify ok';
+    is-deeply @a.Int, 9, 'does it intify ok';
 }, 'test .unshift / .append / .shift multiple elements';
 
 subtest {
