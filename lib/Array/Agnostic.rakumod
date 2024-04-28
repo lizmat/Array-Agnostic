@@ -1,6 +1,6 @@
 use v6.d;
 
-class X::NoImplementation is Exception {
+my class X::Array::NoImplementation is Exception {
     has $.object;
     has $.method;
     method message() {
@@ -56,13 +56,13 @@ role Array::Agnostic
 
 #--- Positional methods that *MAY* be implemented by the consumer --------------
     method BIND-POS(::?ROLE:D: $,$) is hidden-from-backtrace {
-        X::NoImplementation.new(object => self, method => 'BIND-POS').throw
+        X::Array::NoImplementation.new(object => self, method => 'BIND-POS').throw
     }
 
     method EXISTS-POS(::?ROLE:D: $pos) { self.AT-POS($pos).defined }
 
     method DELETE-POS(::?ROLE:D: $) is hidden-from-backtrace {
-        X::NoImplementation.new(object => self, method => 'DELETE-POS').throw
+        X::Array::NoImplementation.new(object => self, method => 'DELETE-POS').throw
     }
 
     method CLEAR(::?ROLE:D:) {
@@ -339,7 +339,7 @@ deal to me!
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018, 2020, 2021, 2023 Elizabeth Mattijsen
+Copyright 2018, 2020, 2021, 2023, 2024 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 
