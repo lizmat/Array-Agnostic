@@ -1,6 +1,8 @@
 Revision history for Array-Agnostic
 
 {{$NEXT}}
+
+0.0.13  2024-07-21T12:39:49+02:00
     - Make sure that .new will actually take any named arguments
       and run the normal object creation logic.  Tim Nelson++ for
       exposing this deficiency
