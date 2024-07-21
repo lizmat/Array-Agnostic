@@ -87,7 +87,7 @@ role Array::Agnostic
 
 #--- Array methods that *MAY* be implemented by the consumer -------------------
     method new(::?CLASS:U: **@values is raw) {
-        self.CREATE.STORE(@values)
+        self.bless(|%_).STORE(@values)
     }
     method iterator(::?ROLE:D:) { Iterate.new( :backend(self), :$.end ) }
 
@@ -213,13 +213,17 @@ Array::Agnostic - be an array without knowing how
 
 =head1 SYNOPSIS
 
-  use Array::Agnostic;
-  class MyArray does Array::Agnostic {
-      method AT-POS()     { ... }
-      method elems()      { ... }
-  }
+=begin code :lang<raku>
 
-  my @a is MyArray = 1,2,3;
+use Array::Agnostic;
+class MyArray does Array::Agnostic {
+    method AT-POS()     { ... }
+    method elems()      { ... }
+}
+
+my @a is MyArray = 1,2,3;
+
+=end code
 
 =head1 DESCRIPTION
 
@@ -231,9 +235,13 @@ the C<Array> functionality while only needing to implement 2 methods:
 
 =head3 method AT-POS
 
-  method AT-POS($position) { ... }  # simple case
+=begin code :lang<raku>
 
-  method AT-POS($position) { Proxy.new( FETCH => { ... }, STORE => { ... } }
+method AT-POS($position) { ... }  # simple case
+
+method AT-POS($position) { Proxy.new( FETCH => { ... }, STORE => { ... } }
+
+=end code
 
 Return the value at the given position in the array.  Must return a C<Proxy>
 that will assign to that position if you wish to allow for auto-vivification
@@ -241,7 +249,11 @@ of elements in your array.
 
 =head3 method elems
 
-  method elems(--> Int:D) { ... }
+=begin code :lang<raku>
+
+method elems(--> Int:D) { ... }
+
+=end code
 
 Return the number of elements in the array (defined as the index of the
 highest element + 1).
@@ -266,14 +278,22 @@ or to provide a given capability.
 
 =head3 method BIND-POS
 
-  method BIND-POS($position, $value) { ... }
+=begin code :lang<raku>
+
+method BIND-POS($position, $value) { ... }
+
+=end code
 
 Bind the given value to the given position in the array, and return the value.
 Will throw an exception if called and not implemented.
 
 =head3 method DELETE-POS
 
-  method DELETE-POS($position) { ... }
+=begin code :lang<raku>
+
+method DELETE-POS($position) { ... }
+
+=end code
 
 Mark the element at the given position in the array as absent (make
 C<EXISTS-POS> return C<False> for this position).  Will throw an exception if
@@ -281,7 +301,11 @@ called and not implemented.
 
 =head3 method EXISTS-POS
 
-  method EXISTS-POS($position) { ... }
+=begin code :lang<raku>
+
+method EXISTS-POS($position) { ... }
+
+=end code
 
 Return C<Bool> indicating whether the element at the given position exists
 (aka, is B<not> marked as absent).  If not implemented, Will call C<AT-POS>
@@ -289,7 +313,11 @@ and return C<True> if the returned value is defined.
 
 =head3 method CLEAR
 
-  method CLEAR(--> Nil) { ... }
+=begin code :lang<raku>
+
+method CLEAR(--> Nil) { ... }
+
+=end code
 
 Reset the array to have no elements at all.  By default implemented by
 repeatedly calling C<DELETE-POS>, which will by all means, be very slow.
@@ -297,7 +325,11 @@ So it is a good idea to implement this method yourself.
 
 =head3 method move-indexes-up
 
-  method move-indexes-up($up, $start = 0) { ... }
+=begin code :lang<raku>
+
+method move-indexes-up($up, $start = 0) { ... }
+
+=end code
 
 Add the given value to the B<indexes> of the elements in the array, optionally
 starting from a given start index value (by default 0, so all elements of the
@@ -306,7 +338,11 @@ to use C<shift>, C<unshift> and related functions.
 
 =head3 method move-indexes-down
 
-  method move-indexes-down($down, $start = $down) { ... }
+=begin code :lang<raku>
+
+method move-indexes-down($down, $start = $down) { ... }
+
+=end code
 
 Subtract the given value to the B<indexes> of the elements in the array,
 optionally starting from a given start index value (by default the same as
@@ -318,9 +354,13 @@ C<unshift> and related functions.
 
 =head3 sub is-container
 
-  my $a = 42;
-  say is-container($a);  # True
-  say is-container(42);  # False
+=begin code :lang<raku>
+
+my $a = 42;
+say is-container($a);  # True
+say is-container(42);  # False
+
+=end code
 
 Returns whether the given argument is a container or not.  This can be handy
 for situations where you want to also support binding, B<and> allow for

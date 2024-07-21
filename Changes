@@ -1,6 +1,12 @@
 Revision history for Array-Agnostic
 
 {{$NEXT}}
+    - Make sure that .new will actually take any named arguments
+      and run the normal object creation logic.  Tim Nelson++ for
+      exposing this deficiency
+    - Modernize rakudoc
+    - Add separate CI badges for each OS supported
+    - Add sponsor button
 
 0.0.12  2024-04-28T12:08:46+02:00
     - Rename exception class to prevent import clash with
