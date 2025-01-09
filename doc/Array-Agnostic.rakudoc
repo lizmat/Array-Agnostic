@@ -1,0 +1,181 @@
+=begin pod
+
+=head1 NAME
+
+Array::Agnostic - be an array without knowing how
+
+=head1 SYNOPSIS
+
+=begin code :lang<raku>
+
+use Array::Agnostic;
+class MyArray does Array::Agnostic {
+    method AT-POS()     { ... }
+    method elems()      { ... }
+}
+
+my @a is MyArray = 1,2,3;
+
+=end code
+
+=head1 DESCRIPTION
+
+This module makes an C<Array::Agnostic> role available for those classes that
+wish to implement the C<Positional> role as an C<Array>.  It provides all of
+the C<Array> functionality while only needing to implement 2 methods:
+
+=head2 Required Methods
+
+=head3 method AT-POS
+
+=begin code :lang<raku>
+
+method AT-POS($position) { ... }  # simple case
+
+method AT-POS($position) { Proxy.new( FETCH => { ... }, STORE => { ... } }
+
+=end code
+
+Return the value at the given position in the array.  Must return a C<Proxy>
+that will assign to that position if you wish to allow for auto-vivification
+of elements in your array.
+
+=head3 method elems
+
+=begin code :lang<raku>
+
+method elems(--> Int:D) { ... }
+
+=end code
+
+Return the number of elements in the array (defined as the index of the
+highest element + 1).
+
+=head2 Optional Methods (provided by role)
+
+You may implement these methods out of performance reasons yourself, but you
+don't have to as an implementation is provided by this role.  They follow the
+same semantics as the methods on the
+L<Array object|https://docs.perl6.org/type/Array>.
+
+In alphabetical order:
+C<append>, C<Array>, C<ASSIGN-POS>, C<end>, C<gist>, C<grab>, C<iterator>, 
+C<keys>, C<kv>, C<list>, C<List>, C<new>, C<pairs>, C<perl>, C<pop>, 
+C<prepend>, C<push>, C<shape>, C<shift>, C<Slip>, C<STORE>, C<Str>, C<splice>, 
+C<unshift>, C<values>
+
+=head2 Optional Internal Methods (provided by role)
+
+These methods may be implemented by the consumer for performance reasons
+or to provide a given capability.
+
+=head3 method BIND-POS
+
+=begin code :lang<raku>
+
+method BIND-POS($position, $value) { ... }
+
+=end code
+
+Bind the given value to the given position in the array, and return the value.
+Will throw an exception if called and not implemented.
+
+=head3 method DELETE-POS
+
+=begin code :lang<raku>
+
+method DELETE-POS($position) { ... }
+
+=end code
+
+Mark the element at the given position in the array as absent (make
+C<EXISTS-POS> return C<False> for this position).  Will throw an exception if
+called and not implemented.
+
+=head3 method EXISTS-POS
+
+=begin code :lang<raku>
+
+method EXISTS-POS($position) { ... }
+
+=end code
+
+Return C<Bool> indicating whether the element at the given position exists
+(aka, is B<not> marked as absent).  If not implemented, Will call C<AT-POS>
+and return C<True> if the returned value is defined.
+
+=head3 method CLEAR
+
+=begin code :lang<raku>
+
+method CLEAR(--> Nil) { ... }
+
+=end code
+
+Reset the array to have no elements at all.  By default implemented by
+repeatedly calling C<DELETE-POS>, which will by all means, be very slow.
+So it is a good idea to implement this method yourself.
+
+=head3 method move-indexes-up
+
+=begin code :lang<raku>
+
+method move-indexes-up($up, $start = 0) { ... }
+
+=end code
+
+Add the given value to the B<indexes> of the elements in the array, optionally
+starting from a given start index value (by default 0, so all elements of the
+array will be affected).  This functionality is needed if you want to be able
+to use C<shift>, C<unshift> and related functions.
+
+=head3 method move-indexes-down
+
+=begin code :lang<raku>
+
+method move-indexes-down($down, $start = $down) { ... }
+
+=end code
+
+Subtract the given value to the B<indexes> of the elements in the array,
+optionally starting from a given start index value (by default the same as
+the number to subtract, so that all elements of the array will be affected.
+This functionality is needed if you want to be able to use C<shift>,
+C<unshift> and related functions.
+
+=head2 Exported subroutines
+
+=head3 sub is-container
+
+=begin code :lang<raku>
+
+my $a = 42;
+say is-container($a);  # True
+say is-container(42);  # False
+
+=end code
+
+Returns whether the given argument is a container or not.  This can be handy
+for situations where you want to also support binding, B<and> allow for
+methods such as C<shift>, C<unshift> and related functions.
+
+=head1 AUTHOR
+
+Elizabeth Mattijsen <liz@raku.rocks>
+
+Source can be located at: https://github.com/lizmat/Array-Agnostic .
+Comments and Pull Requests are welcome.
+
+If you like this module, or what I’m doing more generally, committing to a
+L<small sponsorship|https://github.com/sponsors/lizmat/>  would mean a great
+deal to me!
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2018, 2020, 2021, 2023, 2024, 2025 Elizabeth Mattijsen
+
+This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
+
+=end pod
+
+# vim: expandtab shiftwidth=4
