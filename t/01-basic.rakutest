@@ -1,5 +1,6 @@
-use v6.*;
 use Test;
+
+%*ENV<RAKUDO_NO_DEPRECATIONS> = 1;  # testing .perl
 
 use Array::Agnostic;
 
@@ -14,7 +15,7 @@ class MyArray does Array::Agnostic {
     method gist()                       { @!array.gist                 }
 }
 
-plan 21;
+plan 27;
 
 my @a is MyArray = 1 .. 10;
 is @a.elems, 10, 'did we get 10 elements';
@@ -24,6 +25,11 @@ is-deeply @a.shape, (*,), 'is the shape ok';
 is @a.gist,            "[1 2 3 4 5 6 7 8 9 10]", 'does .gist work ok';
 is @a.Str,              "1 2 3 4 5 6 7 8 9 10",  'does .Str work ok';
 is @a.raku, "MyArray.new(1,2,3,4,5,6,7,8,9,10)", 'does .raku work ok';
+is @a.perl,                             @a.raku, 'does .perl work ok';
+is-deeply @a.Slip, (1,2,3,4,5,6,7,8,9,10).Slip, 'is the Slip ok';
+
+throws-like { @a.splice }, X::NYI, :feature<splice>;
+throws-like { @a.grab   }, X::NYI, :feature<grab>;
 
 subtest {
     plan 10;
@@ -241,12 +247,67 @@ subtest {
     is @b.end,   4, 'did we get right last element after unshift';
 }, 'test holes in arrays';
 
-# #1
-{
+subtest "checking map and comb" => {
+    plan 1;
     my @a is MyArray = ('one and a', 'two and a').map(*.words.map(*.comb));
 
     is-deeply @a, MyArray.new((("o", "n", "e").Seq, ("a", "n", "d").Seq, ("a",).Seq).Seq,(("t", "w", "o").Seq, ("a", "n", "d").Seq, ("a",).Seq).Seq),
       "did we map and comb correctly";
+}
+
+subtest 'roles without necessary methods' => {
+    plan 2;
+    dies-ok { q/
+        my class A does Array::Agnostic {
+            method elems() { }
+        }
+    /.EVAL }, 'Must have an AT-POS method';
+    dies-ok { q/
+        my class A does Array::Agnostic {
+            method AT-POS($) { }
+        }
+    /.EVAL }, 'Must have an elems method';
+}
+
+subtest 'role without certain methods' => {
+    plan 6;
+
+    my class A does Array::Agnostic {
+        has @!a;
+        method AT-POS($i) is rw { @!a[$i]   }
+        method elems()          { @!a.elems }
+    }
+
+    my @a is A = 42;
+
+    is @a.gist, '[42]', 'is the default gist ok';
+
+    throws-like { @a[0] := 42 }, X::Array::NoImplementation,
+      :object(@a),
+      :method<BIND-POS>,
+      :message("No implementation of BIND-POS method found for A."),
+      'can not bind if BIND-POS is missing';
+    throws-like { @a[0]:delete }, X::Array::NoImplementation,
+      :object(@a),
+      :method<DELETE-POS>,
+      :message("No implementation of DELETE-POS method found for A."),
+      'can not delete if DELETE-POS is missing';
+    throws-like { @a = () }, X::Array::NoImplementation,
+      :object(@a),
+      :method<DELETE-POS>,
+      :message("No implementation of DELETE-POS method found for A.
+This is needed to be able to clear an agnostic array."),
+      'can not empty if DELETE-POS is missing';
+    throws-like { @a.unshift(666) }, X::Array::NoImplementation,
+      :object(@a),
+      :method<DELETE-POS>,
+      :message("No implementation of DELETE-POS method found for A."),
+      "can not unshift if DELETE_POS is missing";
+    throws-like { @a.pop }, X::Array::NoImplementation,
+      :object(@a),
+      :method<DELETE-POS>,
+      :message("No implementation of DELETE-POS method found for A."),
+      "can not pop if DELETE_POS is missing";
 }
 
 # vim: expandtab shiftwidth=4

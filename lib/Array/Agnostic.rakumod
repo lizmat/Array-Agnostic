@@ -3,8 +3,8 @@ my class X::Array::NoImplementation is Exception {
     has $.method;
     method message() {
         my $text = "No implementation of $.method method found for $.object.^name().";
-        $*DEFAULT-CLEAN
-          ?? "$text\nThis is needed to be able to clear an agnostic hash."
+        $*DEFAULT-CLEAR
+          ?? "$text\nThis is needed to be able to clear an agnostic array."
           !! $*DEFAULT-UP
             ?? "$text\nThis is needed to be able to insert elements in an agnostic array"
             !! $*DEFAULT-DOWN
@@ -15,42 +15,43 @@ my class X::Array::NoImplementation is Exception {
 
 sub is-container(\it) is export { it.VAR.^name ne it.^name }
 
+#--- Internal Iterator classes -------------------------------------------------
+my class Iterate does Iterator {
+    has $.backend;
+    has $.end;
+    has $.index = -1;
+
+    method pull-one() is raw {
+        $!index < $!end
+          ?? $!backend.AT-POS(++$!index)
+          !! IterationEnd
+    }
+}
+
+my class KV does Iterator {
+    has $.backend;
+    has $.end;
+    has $.index = -1;
+    has int $on;
+
+    method pull-one() is raw {
+        $on++ %% 2
+          ?? $!index < $!end            # on the key now
+            ?? ++$!index
+            !! IterationEnd
+          !! $!backend.AT-POS($!index)  # on the value now
+    }
+}
+
+#- Array::Agnostic -------------------------------------------------------------
 role Array::Agnostic
   does Positional   # .AT-POS and friends
   does Iterable     # .iterator, basically
 {
 
 #--- These methods *MUST* be implemented by the consumer -----------------------
-    method AT-POS($)     is raw { ... }
-    method elems()              { ... }
-
-#--- Internal Iterator classes that need to be specified here ------------------
-    my class Iterate does Iterator {
-        has $.backend;
-        has $.end;
-        has $.index = -1;
-
-        method pull-one() is raw {
-            $!index < $!end
-              ?? $!backend.AT-POS(++$!index)
-              !! IterationEnd
-        }
-    }
-
-    my class KV does Iterator {
-        has $.backend;
-        has $.end;
-        has $.index = -1;
-        has int $on;
-
-        method pull-one() is raw {
-            $on++ %% 2
-              ?? $!index < $!end            # on the key now
-                ?? ++$!index
-                !! IterationEnd
-              !! $!backend.AT-POS($!index)  # on the value now
-        }
-    }
+    method AT-POS($) is raw { ... }  # UNCOVERABLE
+    method elems()          { ... }  # UNCOVERABLE
 
 #--- Positional methods that *MAY* be implemented by the consumer --------------
     method BIND-POS(::?ROLE:D: $,$) is hidden-from-backtrace {
@@ -64,7 +65,7 @@ role Array::Agnostic
     }
 
     method CLEAR(::?ROLE:D:) {
-        my $*DEFAULT-CLEAN := True;
+        my $*DEFAULT-CLEAR := True;
         self.DELETE-POS($_) for (^$.elems).reverse;
     }
 
@@ -113,7 +114,7 @@ role Array::Agnostic
         }
         else {
             my \iterator := iterable.iterator;
-            until (my \pulled := iterator.pull-one) =:= IterationEnd {
+            until (my \pulled := iterator.pull-one) =:= IterationEnd {  # UNCOVERABLE
                 self.ASSIGN-POS(++$i, pulled);
             }
         }
@@ -138,7 +139,7 @@ role Array::Agnostic
     method prepend(::?ROLE:D:  +@values is raw) { self!prepend(@values) }
     method unshift(::?ROLE:D: **@values is raw) { self!prepend(@values) }
     method shift(::?ROLE:D:) {
-        if self.elems -> \elems {
+        if self.elems {
             my \value = self.AT-POS(0)<>;
             self.move-indexes-down(1);
             value
@@ -156,15 +157,15 @@ role Array::Agnostic
           ~ self.^name
           ~ '.new('
           ~ self.map({$_<>.perl}).join(',')
-          ~ ',' x (self.elems == 1 && self.AT-POS(0) ~~ Iterable)
+          ~ ',' x (self.elems == 1 && self.AT-POS(0) ~~ Iterable)  # UNCOVERABLE
           ~ ')'
         })
     }
 
-    method splice(::?ROLE:D:) { X::NYI.new( :feature<splice> ).throw }
-    method grab(::?ROLE:D:)   { X::NYI.new( :feature<grab>   ).throw }
+    method splice(::?ROLE:D: |) { X::NYI.new( :feature<splice> ).throw }
+    method grab(::?ROLE:D:   |) { X::NYI.new( :feature<grab>   ).throw }
 
-# -- Internal subroutines and methods that *MAY* be implemented ----------------
+#--- Internal subroutines and methods that *MAY* be implemented ----------------
 
     # Move indexes up for the number of positions given, optionally from the
     # given given position (defaults to start). Removes the original positions.
@@ -184,7 +185,7 @@ role Array::Agnostic
     # Removes original positions.
     method move-indexes-down(::?ROLE:D: $down, $start = $down --> Nil) {
         my $DEFAULT-DOWN := True;
-        for ($start ..^ $.elems).list -> $from {
+        for $start ..^ $.elems -> $from {
             my $to = $from - $down;
             if self.EXISTS-POS($from) {
                 my \value = self.DELETE-POS($from);  # something to move
@@ -200,6 +201,19 @@ role Array::Agnostic
                 self.DELETE-POS($to);                # nothing to move
             }
         }
+    }
+
+    # Since .AT-POS and .elems are provided by Any, the normal
+    # "has it been provided" test of the core doesn't work, because
+    # technically those methods *are* provided.  But just not with
+    # the role that we're consuming.  So check for the minimal
+    # number of methods that *should* be provided, and bail if one
+    # of them isn't found.
+    for <AT-POS elems> {
+        X::Comp::AdHoc.new(
+          :is-compile-time,
+          payload => "Method '$_' must be implemented by $?CLASS.^name() because it is required by roles: Array::Agnostic."
+        ).throw if $?CLASS.^find_method($_) =:= Mu;
     }
 }
 
