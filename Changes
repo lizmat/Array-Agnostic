@@ -1,6 +1,8 @@
 Revision history for Array-Agnostic
 
 {{$NEXT}}
+
+0.0.14  2026-01-19T22:53:59+01:00
     - Check for actual implementation of the methods that should
       by provided as a minimum: .AT-POS and .elems
     - Now with 100% coverage testing

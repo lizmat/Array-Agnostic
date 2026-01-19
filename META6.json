@@ -3,6 +3,8 @@
   "authors": [
     "Elizabeth Mattijsen"
   ],
+  "build-depends": [
+  ],
   "depends": [
   ],
   "description": "be an array without knowing how",
@@ -12,6 +14,9 @@
     "Array::Agnostic": "lib/Array/Agnostic.rakumod"
   },
   "raku": "6.d",
+  "resources": [
+  ],
+  "source-url": "https://github.com/lizmat/Array-Agnostic.git",
   "support": {
     "bugtracker": "https://github.com/lizmat/Array-Agnostic/issues",
     "email": "liz@raku.rocks",
@@ -19,6 +24,8 @@
   },
   "tags": [
     "UTILS"
+  ],
+  "test-depends": [
   ],
   "version": "0.0.14"
 }
