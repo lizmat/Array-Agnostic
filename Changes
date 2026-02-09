@@ -1,6 +1,11 @@
 Revision history for Array-Agnostic
 
 {{$NEXT}}
+    - Make STORE a normal method, so that ingesting classes can
+      either specify a "method" or a "multi method" without getting
+      stopped by the composing logic
+    - Disable coverage testing for now as it interferes with
+      MoarVM::Bytecode
 
 0.0.14  2026-01-19T22:53:59+01:00
     - Check for actual implementation of the methods that should

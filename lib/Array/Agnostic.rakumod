@@ -73,15 +73,15 @@ role Array::Agnostic
         self.AT-POS($pos) = value;
     }
 
-    proto method STORE(|) {*}
-    multi method STORE(::?ROLE:D: Iterable:D \iterable) {
+    method STORE(::?ROLE:D: Mu \values) {
         self.CLEAR;
-        self!append(iterable)
-    }
-    multi method STORE(::?ROLE:D: Mu \item) {
-        self.CLEAR;
-        self.ASSIGN-POS(0,item);
-        self
+        if values ~~ Iterable:D {
+            self!append(values)
+        }
+        else {
+            self.ASSIGN-POS(0,values);
+            self
+        }
     }
 
 #--- Array methods that *MAY* be implemented by the consumer -------------------

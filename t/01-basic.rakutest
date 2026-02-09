@@ -13,6 +13,7 @@ class MyArray does Array::Agnostic {
     method DELETE-POS($pos)             { @!array.DELETE-POS($pos)     }
     method elems()                      { @!array.elems                }
     method gist()                       { @!array.gist                 }
+    method STORE(\values)               { @!array = values; self       }
 }
 
 plan 27;
