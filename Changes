@@ -1,6 +1,8 @@
 Revision history for Array-Agnostic
 
 {{$NEXT}}
+
+0.0.15  2026-02-09T20:15:30+01:00
     - Make STORE a normal method, so that ingesting classes can
       either specify a "method" or a "multi method" without getting
       stopped by the composing logic

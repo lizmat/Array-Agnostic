@@ -4,7 +4,7 @@
   "specVersion": "1.6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-01-19T21:54:26+00:00",
+    "timestamp": "2026-02-09T19:16:05+00:00",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -19,7 +19,7 @@
     "component": {
       "type": "library",
       "mime-type": "text/plain",
-      "bom-ref": "pkg:raku/zef:lizmat/Array::Agnostic@0.0.14",
+      "bom-ref": "pkg:raku/zef:lizmat/Array::Agnostic@0.0.15",
       "authors": [
         {
           "bom-ref": "ElizabethMattijsen",
@@ -29,7 +29,7 @@
       "publisher": "zef",
       "group": "zef:lizmat",
       "name": "Array::Agnostic",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "description": "be an array without knowing how",
       "scope": "required",
       "licenses": [
@@ -41,14 +41,14 @@
           }
         }
       ],
-      "purl": "pkg:raku/zef:lizmat/Array::Agnostic@0.0.14",
+      "purl": "pkg:raku/zef:lizmat/Array::Agnostic@0.0.15",
       "externalReferences": [
         {
           "url": "https://github.com/lizmat/Array-Agnostic",
           "type": "distribution"
         },
         {
-          "url": "https://raku.land/zef:lizmat/Array::Agnostic?v=0.0.14",
+          "url": "https://raku.land/zef:lizmat/Array::Agnostic?v=0.0.15",
           "type": "documentation"
         },
         {
@@ -60,7 +60,7 @@
           "type": "license"
         },
         {
-          "url": "https://github.com/lizmat/Array-Agnostic/archive/refs/tags/0.0.14.zip",
+          "url": "https://github.com/lizmat/Array-Agnostic/archive/refs/tags/0.0.15.zip",
           "type": "source-distribution"
         },
         {
@@ -157,7 +157,7 @@
       "publisher": "Rakudo Core Developers",
       "group": "Rakudo Core Developers",
       "name": "Rakudo",
-      "version": "2025.12-34-g971b2fa43",
+      "version": "2026.01-11-gb7a4e1a9e",
       "description": "The Rakudo™ Compiler implementing the Raku® Programming Language",
       "scope": "required",
       "licenses": [
@@ -180,7 +180,7 @@
           "type": "issue-tracker"
         },
         {
-          "url": "https://github.com/rakudo/rakudo/archive/971b2fa43.zip",
+          "url": "https://github.com/rakudo/rakudo/archive/b7a4e1a9e.zip",
           "type": "source-distribution"
         },
         {
@@ -201,7 +201,7 @@
       "publisher": "The MoarVM Team",
       "group": "The MoarVM Team",
       "name": "Moar",
-      "version": "2025.12-5-g5eb2ccf33",
+      "version": "2026.01-4-g0742ba286",
       "description": "Short for \"Metamodel On A Runtime\", MoarVM is a modern virtual machine built for the Rakudo compiler and the NQP Compiler Toolchain.",
       "scope": "required",
       "licenses": [
@@ -228,7 +228,7 @@
           "type": "chat"
         },
         {
-          "url": "https://github.com/MoarVM/MoarVM.git/archive/refs/tags/5eb2ccf33.zip",
+          "url": "https://github.com/MoarVM/MoarVM.git/archive/refs/tags/0742ba286.zip",
           "type": "source-distribution"
         }
       ]
@@ -240,7 +240,7 @@
       "type": "distribution"
     },
     {
-      "url": "https://raku.land/zef:lizmat/Array::Agnostic?v=0.0.14",
+      "url": "https://raku.land/zef:lizmat/Array::Agnostic?v=0.0.15",
       "type": "documentation"
     },
     {
@@ -252,7 +252,7 @@
       "type": "license"
     },
     {
-      "url": "https://github.com/lizmat/Array-Agnostic/archive/refs/tags/0.0.14.zip",
+      "url": "https://github.com/lizmat/Array-Agnostic/archive/refs/tags/0.0.15.zip",
       "type": "source-distribution"
     },
     {
