@@ -258,11 +258,13 @@ subtest "checking map and comb" => {
 
 subtest 'roles without necessary methods' => {
     plan 2;
+    todo "maybe in a future release";
     dies-ok { q/
         my class A does Array::Agnostic {
             method elems() { }
         }
     /.EVAL }, 'Must have an AT-POS method';
+    todo "maybe in a future release";
     dies-ok { q/
         my class A does Array::Agnostic {
             method AT-POS($) { }

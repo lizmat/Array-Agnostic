@@ -202,19 +202,6 @@ role Array::Agnostic
             }
         }
     }
-
-    # Since .AT-POS and .elems are provided by Any, the normal
-    # "has it been provided" test of the core doesn't work, because
-    # technically those methods *are* provided.  But just not with
-    # the role that we're consuming.  So check for the minimal
-    # number of methods that *should* be provided, and bail if one
-    # of them isn't found.
-    for <AT-POS elems> {
-        X::Comp::AdHoc.new(
-          :is-compile-time,
-          payload => "Method '$_' must be implemented by $?CLASS.^name() because it is required by roles: Array::Agnostic."
-        ).throw if $?CLASS.^find_method($_) =:= Mu;
-    }
 }
 
 # vim: expandtab shiftwidth=4

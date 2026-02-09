@@ -2,6 +2,13 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.16  2026-02-09T21:28:20+01:00
+    - Remove check for actual implementation of AT-POS and elems.
+      It broke punning a role that consumed Array::Agnostic.
+      Perhaps this can be checked for more properly in a future
+      version of Raku because apparently the method table is
+      not updated in time, so 
+
 0.0.15  2026-02-09T20:15:30+01:00
     - Make STORE a normal method, so that ingesting classes can
       either specify a "method" or a "multi method" without getting
