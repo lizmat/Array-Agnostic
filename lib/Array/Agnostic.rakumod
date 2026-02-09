@@ -86,7 +86,7 @@ role Array::Agnostic
 
 #--- Array methods that *MAY* be implemented by the consumer -------------------
     method new(::?CLASS:U: **@values is raw) {
-        self.bless(|%_).STORE(@values)
+        self.bless(|%_).STORE(@values, :INITIALIZE)
     }
     method iterator(::?ROLE:D:) { Iterate.new( :backend(self), :$.end ) }
 
