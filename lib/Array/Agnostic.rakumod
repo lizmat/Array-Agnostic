@@ -153,10 +153,10 @@ role Array::Agnostic
     method Str(::?ROLE:D:)  { self.values.map( *.Str ).join(" ") }
     method perl(::?ROLE:D:) is DEPRECATED("raku") { self.raku }
     method raku(::?ROLE:D:) {
-        self.perlseen(self.^name, {
+        self.rakuseen(self.^name, {
           ~ self.^name
           ~ '.new('
-          ~ self.map({$_<>.perl}).join(',')
+          ~ self.map({$_<>.raku}).join(',')
           ~ ',' x (self.elems == 1 && self.AT-POS(0) ~~ Iterable)  # UNCOVERABLE
           ~ ')'
         })

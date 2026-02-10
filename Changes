@@ -2,6 +2,10 @@ Revision history for Array-Agnostic
 
 {{$NEXT}}
 
+0.0.18  2026-02-10T20:05:29+01:00
+    - Change use of deprecated methods .perl and .perlseen to
+      their non-deprecated equivalents
+
 0.0.17  2026-02-09T21:53:31+01:00
     - Make sure the default .new implementation calls .STORE
       with the :INITIALIZE named argument set
